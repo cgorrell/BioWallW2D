@@ -1,14 +1,16 @@
 import sqlite3 as lite
 import pyonep
 import logging
+from pyonep import onep
 from pyonep.provision import Provision
 from pyonep.onep import OnepV1
 from pyonep.exceptions import ProvisionException
 from pyonep.exceptions import OneException
 #import RPi.GPIO as GPIO
-logger= logging.getLogger("setup")
+Setup_logger= logging.getLogger("exosite.setup")
 con = lite.connect('pi.db')
 prompt = '> '
+o = onep.OnepV1()
 provision = Provision('m2.exosite.com',
                           https=True,
                           port=443,
@@ -67,6 +69,7 @@ def Modbus_config():
                 cur.execute("INSERT INTO Modbus(Name, Value) VALUES ('Register_bit_length', ?);", (Register_bit_length,))
                 cur.execute("INSERT INTO Modbus(Name, Value) VALUES ('Starting_output', ?);", (Starting_ouput,))
                 cur.execute("INSERT INTO Modbus(Name, Value) VALUES ('Qty_outputs', ?);", (Qty_outputs,))
+            Setup_logger.info("Modbus table updated with: \n Modbus_address = %r \n Baudrate = %r \n Register_bit_length = %r \n Starting_input = %r \n Qty_inputs = %r \n Starting_ouput = %r \n Qty_outputs = %r \n" % (Modbus_address, Baudrate,  Register_bit_length, Starting_input, Qty_inputs, Starting_ouput, Qty_outputs))
             break
         print "let's try again."
 
@@ -92,6 +95,7 @@ def Gateway_config():
                 cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Model', ?);", ('BioWallW2D', ))
             	cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Serial', ?);", (Serial_number, ))
             	Status_check()	
+            Setup_logger.info(" Gateway table updated with: \n Device_alias %r \n Serial number= %r \n" % (Device_alias, Serial_number))
             break
         print "let's try again."
 
@@ -104,31 +108,31 @@ def Sensors_config():
         print "What is the modbus register address of your PH sensor?"
         PH_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your PH sensor?"
+        print "What is Dataport RID of your PH sensor ? (Future application put 1 for now)"
         PH_RID = raw_input(prompt)
 
         print "What is the modbus register address of your EC sensor?"
         EC_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your EC sensor?"
+        print "What is Dataport RID of your EC sensor? (Future application put 1 for now)"
         EC_RID = raw_input(prompt)
 
         print "What is the modbus register address of your Pressure sensor?"
         Pressure_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your Pressure sensor?"
+        print "What is Dataport RID of your Pressure sensor? (Future application put 1 for now)"
         Pressure_RID = raw_input(prompt)
 
         print "What is the modbus register address of your Flow sensor?"
         Flow_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your Flow sensor?"
+        print "What is Dataport RID of your Flow sensor? (Future application put 1 for now)"
         Flow_RID = raw_input(prompt)
 
         print "What is the modbus register address of your Leak sensor?"
         Leak_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your Leak sensor?"
+        print "What is Dataport RID of your Leak sensor? (Future application put 1 for now)"
         Leak_RID = raw_input(prompt)
 
         print "Is the everything correct (y/n)? \n PH_address = %r \n PH_RID = %r \n EC_address = %r \n EC_RID = %r \n Pressure_address = %r \n Pressure_RID = %r \n Flow_address = %r \n Flow_RID = %r \n Leak_address = %r \n Leak_RID = %r \n " % (PH_address, PH_RID, EC_address, EC_RID, Pressure_address, Pressure_RID, Flow_address, Flow_RID, Leak_address, Leak_RID)
@@ -140,6 +144,7 @@ def Sensors_config():
                 cur.execute("INSERT INTO Sensors(Alias, Address, RID) VALUES ('Pressure', ?, ?);", (Pressure_address, Pressure_RID, ))
                 cur.execute("INSERT INTO Sensors(Alias, Address, RID) VALUES ('Flow', ?, ?);", (Flow_address, Flow_RID, ))
                 cur.execute("INSERT INTO Sensors(Alias, Address, RID) VALUES ('Leak', ?, ?);", (Leak_address, Leak_RID, ))
+            Setup_logger.info("Sensor table updated with: \n PH_address = %r \n PH_RID = %r \n EC_address = %r \n EC_RID = %r \n Pressure_address = %r \n Pressure_RID = %r \n Flow_address = %r \n Flow_RID = %r \n Leak_address = %r \n Leak_RID = %r \n " % (PH_address, PH_RID, EC_address, EC_RID, Pressure_address, Pressure_RID, Flow_address, Flow_RID, Leak_address, Leak_RID))
             break
         print "Let's try again."
           
@@ -150,13 +155,13 @@ def Outputs_config():
         print "What is the modbus register address of your make up water solenoid?"
         Solenoid_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your make up water solenoid?"
+        print "What is Dataport RID of your make up water solenoid? (Future application put 1 for now)"
         Solenoid_RID = raw_input(prompt)
 
         print "What is the modbus register address of your fertigator pump?"
         Fertigator_address = int(raw_input(prompt))
 
-        print "What is Dataport RID of your fertigator pump?"
+        print "What is Dataport RID of your fertigator pump? (Future application put 1 for now)"
         Fertigator_RID = raw_input(prompt)
 
         print "Is the everything correct (y/n)? \n Solenoid_address = %r \n Solenoid_RID = %r \n Fertigator_address = %r \n Fertigator_RID = %r \n" % (Solenoid_address, Solenoid_RID, Fertigator_address, Fertigator_RID)
@@ -165,6 +170,7 @@ def Outputs_config():
                 cur = con.cursor()
                 cur.execute("INSERT INTO Outputs(Alias, Address, RID) VALUES ('Solenoid', ?, ?);", (Solenoid_address, Solenoid_RID, ))
                 cur.execute("INSERT INTO Outputs(Alias, Address, RID) VALUES ('Fertigator', ?, ?);", (Fertigator_address, Fertigator_RID, ))
+            Setup_logger.info(" Output table updated with: \n Solenoid_address = %r \n Solenoid_RID = %r \n Fertigator_address = %r \n Fertigator_RID = %r \n" % (Solenoid_address, Solenoid_RID, Fertigator_address, Fertigator_RID))
             break
         print "Let's try again."
 
@@ -194,6 +200,7 @@ def Timers_config():
                 cur.execute("INSERT INTO Timers(Name, Length) VALUES ('Pump_cycle', ?);", (Pump_cycle, ))
                 cur.execute("INSERT INTO Timers(Name, Length) VALUES ('Fertigator_timer', ?);", (Fertigator_timer, ))
                 cur.execute("INSERT INTO Timers(Name, Length) VALUES ('Relay', ?);", (Relay, ))
+            Setup_logger.info("Timers table updated with: \n Pump_cycle %r seconds \n Pump_timer every %r seconds \n Fertigator every %r seconds \n Relay every %r seconds \n" % (Pump_cycle, Pump_timer, Fertigator_timer, Relay))
             break
         print "Let's try again."
 
@@ -210,7 +217,10 @@ def Status_check():
 		status = Active_check_list[0]
 		with con:
 			cur = con.cursor()
-			cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Status', ?);", (status, ))
+			if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Status", )) != True:
+				cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Status', ?);", (status, ))
+			else:
+				cur.execute("UPDATE Gateway SET Value =? WHERE Name=?;", (status, "Status",  ))
 		return status
 	except :
 		print "status error"
@@ -225,7 +235,7 @@ def Activate_device():
 		vendortoken = cur.execute("SELECT Value FROM Gateway WHERE Name = ?;", ('Vendor_token', )).fetchone()[0]
 	return provision.serialnumber_activate(model, sn1, vendorname).body
 
-def Setup_timers():
+def Setup_timers(Device_CIK):
 	vals_to_write = []
 	with con:
 		cur = con.cursor()
@@ -291,8 +301,11 @@ def Startup():
 				Device_CIK = Activate_device()
 				with con:
 					cur = con.cursor()
-					cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Device_cik', ?);", (Device_CIK, ))
-				Setup_timers()
+					if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Device_cik", )) != True:
+						cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Device_cik', ?);", (Device_CIK, ))
+					else:
+						 cur.execute("UPDATE Gateway SET Value = ? WHERE Name = ?;", (Device_CIK,"Device_cik", ))
+				Setup_timers(Device_CIK)
 			break
 
 if __name__ == '__main__':
