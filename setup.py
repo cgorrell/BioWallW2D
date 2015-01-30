@@ -217,7 +217,7 @@ def Status_check():
 		status = Active_check_list[0]
 		with con:
 			cur = con.cursor()
-			if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Status", )) != True:
+			if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Status", )).fetchone()[0] != True:
 				cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Status', ?);", (status, ))
 			else:
 				cur.execute("UPDATE Gateway SET Value =? WHERE Name=?;", (status, "Status",  ))
@@ -301,7 +301,7 @@ def Startup():
 				Device_CIK = Activate_device()
 				with con:
 					cur = con.cursor()
-					if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Device_cik", )) != True:
+					if cur.execute("SELECT EXISTS(SELECT 1 FROM Gateway WHERE Name = ? LIMIT 1);", ("Device_cik", )).fetchone()[0] != True:
 						cur.execute("INSERT INTO Gateway(Name, Value) VALUES ('Device_cik', ?);", (Device_CIK, ))
 					else:
 						 cur.execute("UPDATE Gateway SET Value = ? WHERE Name = ?;", (Device_CIK,"Device_cik", ))
